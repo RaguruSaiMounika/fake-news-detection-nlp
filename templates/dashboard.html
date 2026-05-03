@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fake News Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="/"> Fake News Detector</a>
+  <div class="ms-auto">
+    <a href="/" class="btn btn-outline-light"> Home</a>
+  </div>
+</nav>
+
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Dataset Visualizations</h2>
+
+  <div class="row">
+    <div class="col-md-6 mb-4 text-center">
+      <h5>Label Distribution</h5>
+      <img src="data:image/png;base64,{{ label_chart }}" class="img-fluid rounded shadow">
+    </div>
+    <div class="col-md-6 mb-4 text-center">
+      <h5>Fake News WordCloud</h5>
+      <img src="data:image/png;base64,{{ fake_wc }}" class="img-fluid rounded shadow">
+    </div>
+    <div class="col-md-6 mb-4 text-center">
+      <h5>Real News WordCloud</h5>
+      <img src="data:image/png;base64,{{ real_wc }}" class="img-fluid rounded shadow">
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

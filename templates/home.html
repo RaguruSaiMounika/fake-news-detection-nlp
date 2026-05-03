@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fake News Detector</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Roboto&display=swap" rel="stylesheet">
+<style>
+body {
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    position: relative;
+    overflow-x: hidden;
+
+    background-image: url("{{ url_for('static', filename='news.jpg') }}");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center center;
+}
+
+.navbar {
+    background-color: #333;
+    font-family: 'Merriweather', serif;
+}
+.navbar .navbar-brand {
+    color: #fff;
+    font-weight: 700;
+}
+
+.card-custom {
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    margin-bottom: 40px;
+    padding: 25px;
+    background-color: rgba(255,255,255,0.85);
+    border-left: 5px solid #333;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.card-custom:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+}
+
+.section-title {
+    font-family: 'Merriweather', serif;
+    font-weight: 700;
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 25px;
+    position: relative;
+    letter-spacing: 1px;
+}
+.section-title::after {
+    content: '';
+    width: 100px;
+    height: 4px;
+    background: #333;
+    display: block;
+    margin: 10px auto 0 auto;
+}
+
+.prediction {
+    font-family: 'Merriweather', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    padding: 20px;
+    border-radius: 15px;
+    display: inline-block;
+    margin-top: 15px;
+    text-align: center;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+}
+.alert-fake { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.alert-real { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+
+.btn-gradient {
+    background: linear-gradient(90deg, #555, #222);
+    color: #fff;
+    font-weight: 700;
+    padding: 12px 25px;
+    border-radius: 50px;
+    transition: all 0.3s;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    font-family: 'Merriweather', serif;
+}
+.btn-gradient:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.wordcloud-img {
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    max-width: 100%;
+    margin-top: 10px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.wordcloud-img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.divider {
+    height: 2px;
+    background-color: #333;
+    margin: 25px 0;
+    border-radius: 2px;
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg shadow">
+  <div class="container">
+    <a class="navbar-brand" href="/"><i class="fas fa-newspaper"></i> Fake News Detector</a>
+  </div>
+</nav>
+
+<div class="container mt-5 mb-5">
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card card-custom">
+        <h2 class="section-title">Check if News is Real or Fake</h2>
+        <form method="POST">
+          <div class="mb-3">
+            <input type="text" name="news_title" class="form-control form-control-lg" placeholder="News Title" value="{{ title_input }}">
+          </div>
+          <div class="mb-3">
+            <textarea name="news_text" class="form-control" rows="8" placeholder="News Content">{{ text_input }}</textarea>
+          </div>
+          <div class="text-center mt-3">
+            <button type="submit" class="btn btn-gradient btn-lg"><i class="fas fa-search"></i> Predict</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      {% if prediction %}
+      <div class="card card-custom">
+        <div class="text-center">
+          <div class="prediction {{ 'alert-fake' if 'Fake' in prediction else 'alert-real' }}">{{ prediction }}</div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="text-center mt-3">
+          <h5>Prediction Graph</h5>
+          <img src="data:image/png;base64,{{ label_chart }}" class="img-fluid wordcloud-img">
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row text-center">
+          {% if fake_wc %}
+          <div class="col-md-12 mb-3">
+            <h6>Fake News WordCloud</h6>
+            <img src="data:image/png;base64,{{ fake_wc }}" class="img-fluid wordcloud-img">
+          </div>
+          {% endif %}
+          {% if real_wc %}
+          <div class="col-md-12 mb-3">
+            <h6>Real News WordCloud</h6>
+            <img src="data:image/png;base64,{{ real_wc }}" class="img-fluid wordcloud-img">
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
